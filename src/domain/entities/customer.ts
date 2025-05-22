@@ -39,6 +39,10 @@ export default class Customer {
         return this._id;
     }
 
+    get active(): boolean {
+        return this._active;
+    }
+
     changeName(name: string) {
         this._name = name;
     }
