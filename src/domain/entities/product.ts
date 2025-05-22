@@ -35,6 +35,10 @@ export default class Product {
         return this._price;
     }
 
+    get id() {
+        return this._id;
+    }
+
     changeName(value: string) {
         this._name = value;
         this.validate();
