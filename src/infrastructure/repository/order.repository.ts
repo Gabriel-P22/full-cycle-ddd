@@ -19,7 +19,7 @@ export default class OrderRespository implements OrderRepositoryInterface {
             })),
             total: entity.total()
         }, {
-            include: [{ model: OrderItemModel }]
+            include: [{ model: OrderItemModel, as: "items" }]
         });
     }
 
@@ -62,7 +62,8 @@ export default class OrderRespository implements OrderRepositoryInterface {
         });
         
         return orders.map((order) => 
-            new Order(order.id,
+            new Order(
+                order.id,
                 order.customer_id,
                 order.items.map((item) => (
                     new OrderItem(
