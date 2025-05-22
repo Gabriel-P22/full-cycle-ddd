@@ -2,7 +2,8 @@ import { Column, Model, PrimaryKey, Table } from "sequelize-typescript";
 
 @Table({
     tableName: "customer",
-    timestamps: false
+    timestamps: false,
+    underscored: true
 })
 export default class CustomerModel extends Model {
 
