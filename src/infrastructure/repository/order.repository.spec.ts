@@ -150,5 +150,8 @@ describe("Order repository test", () => {
         const orders = await orderRespository.findAll()
 
         expect(orders.length).toBe(2);
+        expect(orders[0]).toStrictEqual(orderOne)
+        expect(orders[1]).toStrictEqual(orderTwo)
+
     });
 });
