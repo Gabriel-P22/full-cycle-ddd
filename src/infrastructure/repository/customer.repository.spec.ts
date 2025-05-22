@@ -130,4 +130,10 @@ describe("Product repository test", () => {
         expect([customerOne, customerTwo]).toEqual(foundProducts)
         expect(foundProducts.length).toBe(2)
     });
+
+    it("Should throw an error when customer not found", async () => {
+        const customerRespository = new CustomerRespository();
+
+        await expect(customerRespository.find("123")).rejects.toThrow("Customer not found");
+    });
 });

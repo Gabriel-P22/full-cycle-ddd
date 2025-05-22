@@ -40,19 +40,29 @@ export default class CustomerRespository implements CustomerRepositoryInterface 
     }
 
     async find(id: string): Promise<Customer> {
-        const productModel = await CustomerModel.findOne({ where: { id }});
+        let customerModel;
+
+        try {
+            customerModel = await CustomerModel.findOne({ 
+                where: { id },
+                rejectOnEmpty: true
+            });
+        } catch {
+            throw new Error("Customer not found");
+        }
+
 
         const customer = new Customer(
-            productModel.id,
-            productModel.name
+            customerModel.id,
+            customerModel.name
         );
 
         
         customer.address = new Address(
-            productModel.street,
-            productModel.number,
-            productModel.zipcode,
-            productModel.city,
+            customerModel.street,
+            customerModel.number,
+            customerModel.zipcode,
+            customerModel.city,
         );
 
         return customer;
@@ -75,6 +85,12 @@ export default class CustomerRespository implements CustomerRepositoryInterface 
                 model.city,
             );
 
+            if(customer.isActive) {
+                customer.activate()
+            }
+
+            customer.addRewardPoints(model.rewardsPoints);
+            
             return customer
     
         });
