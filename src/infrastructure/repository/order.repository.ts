@@ -3,6 +3,7 @@ import OrderItem from "../../domain/entities/orderItem";
 import OrderRepositoryInterface from "../../domain/repository/order-repository.interface";
 import OrderItemModel from "../db/sequelize/model/order-item.model";
 import OrderModel from "../db/sequelize/model/order.model";
+import ProductModel from "../db/sequelize/model/product.model";
 
 export default class OrderRespository implements OrderRepositoryInterface {
 
@@ -24,7 +25,36 @@ export default class OrderRespository implements OrderRepositoryInterface {
     }
 
     async update(entity: Order): Promise<void> {
-        throw new Error("need implements")
+        await OrderModel.update(
+            {
+                id: entity.id,
+                customer_id: entity.customerId,
+                total: entity.total()
+            },
+            {
+                where: { id: entity.id }
+            }
+        );
+
+        OrderItemModel.destroy({
+            where: { order_id: entity.id }
+        });
+
+        entity.items.forEach(async (item) => {
+            OrderItemModel.create(
+                {
+                    id: item.id,
+                    order_id: entity.id,
+                    product_id: item.productId,
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                },
+                {
+                    include: [ { model: ProductModel } ]
+                }
+            );
+        });
     }
 
     async find(id: string): Promise<Order> {

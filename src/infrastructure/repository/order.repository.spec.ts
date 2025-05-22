@@ -11,6 +11,7 @@ import Product from "../../domain/entities/product";
 import OrderItem from "../../domain/entities/orderItem";
 import Order from "../../domain/entities/order";
 import OrderRespository from "./order.repository";
+import { or } from "sequelize";
 
 describe("Order repository test", () => {
 
@@ -76,6 +77,45 @@ describe("Order repository test", () => {
                 quantity: 2
             }]
         })
+    });
+
+    it("Should update a order", async () => {
+        const customerRespository = new CustomerRespository();
+        const customer = new Customer("1", "Customer_1");
+        const address = new Address("Street 1", 1, "Z1", "RJ");
+        customer.address = address;
+        await customerRespository.create(customer);
+
+        const productRespository = new ProductRespository();
+        const product = new Product("1", "Product 1", 100);
+        await productRespository.create(product);
+
+        const orderItem = new OrderItem(
+            "1",
+            product.name,
+            product.price,
+            product.id,
+            2
+        );
+        const orderItemTwo = new OrderItem(
+            "2",
+            product.name,
+            product.price,
+            product.id,
+            2
+        );
+
+        const order = new Order("1", customer.id, [orderItem]);
+
+        const orderRespository = new OrderRespository();
+        await orderRespository.create(order);
+
+        const orderModel = await orderRespository.find(order.id);
+
+        orderModel.addItems(orderItemTwo);
+        await orderRespository.update(order);
+
+        expect(orderModel.items.length).toBe(2);
     });
 
 
@@ -152,6 +192,5 @@ describe("Order repository test", () => {
         expect(orders.length).toBe(2);
         expect(orders[0]).toStrictEqual(orderOne)
         expect(orders[1]).toStrictEqual(orderTwo)
-
     });
 });
