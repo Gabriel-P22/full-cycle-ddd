@@ -1,6 +1,11 @@
+import { CustomerCreatedHandlerFirstCase } from "../customer/handler/customer-created-first-case.handler";
+import { CustomerCreatedHandlerSecondCase } from "../customer/handler/customer-created-second-case.handler";
 import { SendEmailWhenProductsIsCreatedHandler } from "../product/handler/send-email-when-product-is-creatred.handler";
+import { CustomerChangeAddressEventHandler } from "../customer/handler/customer-change-address.handler";
 import ProductCreatedEvent from "../product/product-created.event";
 import EventDispatcher from "./event-dispatcher";
+import Customer from "../../entities/customer";
+import CustomerCreatedEvent from "../customer/customer-created.event";
 
 describe("Domain events tests", () => {
     it("should register an event handler", () => {
@@ -8,7 +13,6 @@ describe("Domain events tests", () => {
         const eventHandler = new SendEmailWhenProductsIsCreatedHandler();
 
         const eventName = "ProductCreatedEvent";
-
 
         eventDispatcher.register(eventName, eventHandler);
 
@@ -53,6 +57,7 @@ describe("Domain events tests", () => {
 
     it("should notify all event handlers", () => {
         const eventDispatcher = new EventDispatcher();
+
         const eventHandler = new SendEmailWhenProductsIsCreatedHandler();
         const spyEventHandler = jest.spyOn(eventHandler, "handler");
 
@@ -62,9 +67,7 @@ describe("Domain events tests", () => {
 
         expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
         expect(eventDispatcher.getEventHandlers[eventName].length).toBe(1);
-        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandler);
-
-        
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandler);        
 
         const productCreatedEvent = new ProductCreatedEvent({
             name: "Product 1",
@@ -75,5 +78,150 @@ describe("Domain events tests", () => {
         eventDispatcher.notify(productCreatedEvent);
 
         expect(spyEventHandler).toHaveBeenCalled();
+    });
+
+    it("Should create an Customer", () => {
+        const eventDispatcher = new EventDispatcher();
+
+        const eventHandlerFirstCase = new CustomerCreatedHandlerFirstCase();
+        const eventHandlerSecondCase = new CustomerCreatedHandlerSecondCase();
+
+        const eventName = "CustomerCreatedEvent";
+
+        eventDispatcher.register(eventName, eventHandlerFirstCase);
+        eventDispatcher.register(eventName, eventHandlerSecondCase);
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
+
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(2);
+
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandlerFirstCase);
+        expect(eventDispatcher.getEventHandlers[eventName][1]).toMatchObject(eventHandlerSecondCase);
+    });
+
+    it("should unregister an Customer event handler", () => {
+        const eventDispatcher = new EventDispatcher();
+
+        const eventHandlerFirstCase = new CustomerCreatedHandlerFirstCase();
+        const eventHandlerSecondCase = new CustomerCreatedHandlerSecondCase();
+
+        const eventName = "CustomerCreatedEvent";
+
+        eventDispatcher.register(eventName, eventHandlerFirstCase);
+        eventDispatcher.register(eventName, eventHandlerSecondCase);
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
+
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(2);
+
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandlerFirstCase);
+        expect(eventDispatcher.getEventHandlers[eventName][1]).toMatchObject(eventHandlerSecondCase);
+
+        eventDispatcher.unregister(eventName, eventHandlerFirstCase);
+        eventDispatcher.unregister(eventName, eventHandlerSecondCase);
+
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(0);
+    });
+
+    it("should unregister all Customer event handlers", () => {
+        const eventDispatcher = new EventDispatcher();
+
+        const eventHandlerFirstCase = new CustomerCreatedHandlerFirstCase();
+        const eventHandlerSecondCase = new CustomerCreatedHandlerSecondCase();
+
+        const eventName = "CustomerCreatedEvent";
+
+        eventDispatcher.register(eventName, eventHandlerFirstCase);
+        eventDispatcher.register(eventName, eventHandlerSecondCase);
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
+
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(2);
+
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandlerFirstCase);
+        expect(eventDispatcher.getEventHandlers[eventName][1]).toMatchObject(eventHandlerSecondCase);
+
+        eventDispatcher.unregisterAll();
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeUndefined();
+    });
+
+    it("should notify all Customer event handlers", () => {
+        const eventDispatcher = new EventDispatcher();
+
+        const eventHandlerFirstCase = new CustomerCreatedHandlerFirstCase();
+        const eventHandlerSecondCase = new CustomerCreatedHandlerSecondCase();
+
+        const eventHandlerFirstCaseSpy = jest.spyOn(eventHandlerFirstCase, "handler");
+        const eventHandlerSecondCaseSpy = jest.spyOn(eventHandlerSecondCase, "handler");
+
+        const eventName = "CustomerCreatedEvent";
+
+        eventDispatcher.register(eventName, eventHandlerFirstCase);
+        eventDispatcher.register(eventName, eventHandlerSecondCase);
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
+
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(2);
+
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandlerFirstCase);
+        expect(eventDispatcher.getEventHandlers[eventName][1]).toMatchObject(eventHandlerSecondCase);
+
+        const customer = new Customer("1", "Customer");
+
+        const customerCreatedFirstCase = new CustomerCreatedEvent(customer);
+
+        eventDispatcher.notify(customerCreatedFirstCase);
+
+        expect(eventHandlerFirstCaseSpy).toHaveBeenCalled();
+        expect(eventHandlerSecondCaseSpy).toHaveBeenCalled();
+    });
+
+
+    it("Should update Customer address", () => {
+        const eventDispatcher = new EventDispatcher();
+
+        const eventHandler = new CustomerChangeAddressEventHandler();
+        const eventName = "CustomerChangeAddressEvent";
+
+        eventDispatcher.register(eventName, eventHandler);
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(1);
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandler);
+    });
+
+    it("Shoul unregister an Address event address", () => {
+        const eventDispatcher = new EventDispatcher();
+
+        const eventHandler = new CustomerChangeAddressEventHandler();
+        const eventName = "CustomerChangeAddressEvent";
+
+        eventDispatcher.register(eventName, eventHandler);
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(1);
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandler);
+
+        eventDispatcher.unregister(eventName, eventHandler);
+
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(0);
+    });
+
+    it("Shoul unregister an Address event address", () => {
+        const eventDispatcher = new EventDispatcher();
+
+        const eventHandler = new CustomerChangeAddressEventHandler();
+        const eventName = "CustomerChangeAddressEvent";
+
+        eventDispatcher.register(eventName, eventHandler);
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(1);
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandler);
+
+        eventDispatcher.unregisterAll();
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeUndefined();
     });
 })
