@@ -1,5 +1,5 @@
-import Order from "./order";
-import OrderItem from "./orderItem";
+import Order from "../../checkout/entities/order";
+import OrderItem from "../../checkout/entities/orderItem";
 import Product from "./product";
 
 describe("Product unit tests", () => {

@@ -1,4 +1,4 @@
-import Address from "./address";
+import Address from "../vo/address";
 import Customer from "./customer";
 
 describe("Customer unit tests", () => {

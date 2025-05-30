@@ -1,13 +1,13 @@
-import { CustomerCreatedHandlerFirstCase } from "../customer/handler/customer-created-first-case.handler";
-import { CustomerCreatedHandlerSecondCase } from "../customer/handler/customer-created-second-case.handler";
-import { SendEmailWhenProductsIsCreatedHandler } from "../product/handler/send-email-when-product-is-creatred.handler";
-import { CustomerChangeAddressEventHandler } from "../customer/handler/customer-change-address.handler";
-import ProductCreatedEvent from "../product/product-created.event";
+import { CustomerCreatedHandlerFirstCase } from "../../customer/events/handler/customer-created-first-case.handler";
+import { CustomerCreatedHandlerSecondCase } from "../../customer/events/handler/customer-created-second-case.handler";
+import { SendEmailWhenProductsIsCreatedHandler } from "../../product/events/handler/send-email-when-product-is-creatred.handler";
+import { CustomerChangeAddressEventHandler } from "../../customer/events/handler/customer-change-address.handler";
+import ProductCreatedEvent from "../../product/events/product-created.event";
 import EventDispatcher from "./event-dispatcher";
-import Customer from "../../entities/customer";
-import CustomerCreatedEvent from "../customer/customer-created.event";
-import Address from "../../entities/address";
-import CustomerChangeAddressEvent from "../customer/customer-change-address.event";
+import Customer from "../../customer/entities/customer";
+import CustomerCreatedEvent from "../../customer/events/customer-created.event";
+import Address from "../../customer/vo/address";
+import CustomerChangeAddressEvent from "../../customer/events/customer-change-address.event";
 
 describe("Domain events tests", () => {
     it("should register an event handler", () => {

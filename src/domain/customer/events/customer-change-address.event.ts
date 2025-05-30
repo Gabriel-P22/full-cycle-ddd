@@ -1,5 +1,5 @@
-import Customer from "../../entities/customer";
-import EventInterface from "../@shared/event.interface";
+import Customer from "../../customer/entities/customer";
+import EventInterface from "../../events/@shared/event.interface";
 
 interface CustomerChangeAddressEventInterface {
     customer: Customer,
