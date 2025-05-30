@@ -6,6 +6,8 @@ import ProductCreatedEvent from "../product/product-created.event";
 import EventDispatcher from "./event-dispatcher";
 import Customer from "../../entities/customer";
 import CustomerCreatedEvent from "../customer/customer-created.event";
+import Address from "../../entities/address";
+import CustomerChangeAddressEvent from "../customer/customer-change-address.event";
 
 describe("Domain events tests", () => {
     it("should register an event handler", () => {
@@ -207,6 +209,34 @@ describe("Domain events tests", () => {
 
         expect(eventDispatcher.getEventHandlers[eventName].length).toBe(0);
     });
+
+    it("Should notify customer update address event", () => {
+        const eventDispatcher = new EventDispatcher();
+
+        const eventHandler = new CustomerChangeAddressEventHandler();
+        const eventHandlerSpy = jest.spyOn(eventHandler, "handler");
+
+        const eventName = "CustomerChangeAddressEvent";
+
+        eventDispatcher.register(eventName, eventHandler);
+
+        expect(eventDispatcher.getEventHandlers[eventName]).toBeDefined();
+        expect(eventDispatcher.getEventHandlers[eventName].length).toBe(1);
+        expect(eventDispatcher.getEventHandlers[eventName][0]).toMatchObject(eventHandler);
+
+        const customer = new Customer("1", "First Customer");
+        customer.address = new Address("Street", 1, "11111", "RJ");
+
+        const event = {
+            customer
+        }
+
+        const changeAddressEvent = new CustomerChangeAddressEvent(event)
+
+        eventDispatcher.notify(changeAddressEvent);
+
+        expect(eventHandlerSpy).toHaveBeenCalled();
+    })
 
     it("Shoul unregister an Address event address", () => {
         const eventDispatcher = new EventDispatcher();
